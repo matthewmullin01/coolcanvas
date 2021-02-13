@@ -1,11 +1,10 @@
 import { FunctionComponent, useCallback, useEffect, useRef } from "react";
 import { useWindowSize } from "../../utils/hooks/useWindowSize";
-import { loadImage } from "../../utils/imageUtils";
 import { debounce } from "lodash";
 import "./Canvas.scss";
 
 export interface CanvasProps {
-  imageUris: string[];
+  images: HTMLImageElement[];
 }
 
 // TODO pass images/elements to render
@@ -20,13 +19,12 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
   }, []);
 
   const drawImages = useCallback(async () => {
-    const images = await Promise.all(props.imageUris.map((uri) => loadImage(uri)));
-    images.forEach((image) => {
+    props.images.forEach((image) => {
       const imageRect = new Path2D();
       imageRect.rect(0, 0, image.width, image.height);
       canvasRef.current.getContext("2d")!.drawImage(image, 0, 0, image.width, image.height);
     });
-  }, [props.imageUris]);
+  }, [props.images]);
 
   const render = useCallback(() => {
     canvasRef.current.getContext("2d")!.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
