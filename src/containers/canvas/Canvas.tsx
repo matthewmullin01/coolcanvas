@@ -2,15 +2,22 @@ import { FunctionComponent, useCallback, useEffect, useRef } from "react";
 import { useWindowSize } from "../../utils/hooks/useWindowSize";
 import { debounce } from "lodash";
 import "./Canvas.scss";
+import { CanvasElement, Vector2D } from "../../utils/models";
 
 export interface CanvasProps {
   images: HTMLImageElement[];
 }
 
-// TODO pass images/elements to render
 const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null as any);
   const windowSize = useWindowSize();
+
+  const initCanvasElements = (image: HTMLImageElement): CanvasElement => {
+    const center = new Vector2D(image.width / 2, image.height / 2);
+    return new CanvasElement(image, center);
+  };
+
+  const canvasElements = props.images.map(initCanvasElements);
 
   const adjustCanvasSize = useCallback(() => {
     const { innerWidth } = window;
@@ -19,19 +26,23 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
   }, []);
 
   const drawImages = useCallback(async () => {
-    props.images.forEach((image) => {
+    canvasElements.forEach((element) => {
       const imageRect = new Path2D();
-      imageRect.rect(0, 0, image.width, image.height);
-      canvasRef.current.getContext("2d")!.drawImage(image, 0, 0, image.width, image.height);
+      imageRect.rect(0, 0, element.width, element.height);
+      console.log(element.edges, element.corners);
+
+      canvasRef.current
+        .getContext("2d")!
+        .drawImage(element.canvasImageSource, element.edges.left, element.edges.top, element.width, element.height);
     });
-  }, [props.images]);
+  }, [canvasElements]);
 
   const render = useCallback(() => {
     canvasRef.current.getContext("2d")!.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     drawImages();
   }, [drawImages]);
 
-  // Debounce needs to maintain its memory reference. The eslint-disable allows us to maintain a reference where usually useCallbacks wont
+  // Debounce needs to maintain its reference in memory. The eslint-disable allows us to maintain a reference where usually useCallbacks won't
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounceResize = useCallback(
     debounce(() => {
@@ -40,6 +51,21 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     }, 500),
     []
   );
+
+  // Mouse Events
+  const onMouseDown = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    const context = canvasRef.current!.getContext("2d")!;
+
+    const xPos = event.pageX - (event.currentTarget.offsetLeft || 0);
+    const yPos = event.pageY - (event.currentTarget.offsetTop || 0);
+    const relativePos = new Vector2D(xPos, yPos);
+
+    canvasElements.forEach((el) => {
+      console.log(el.containsPoint(relativePos));
+    });
+
+    console.log(xPos, yPos);
+  };
 
   // Window Resize Handler
   useEffect(() => {
@@ -53,7 +79,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     render();
   }, [adjustCanvasSize, render]);
 
-  return <canvas ref={canvasRef}></canvas>;
+  return <canvas ref={canvasRef} onMouseDown={onMouseDown}></canvas>;
 };
 
 export default Canvas;
