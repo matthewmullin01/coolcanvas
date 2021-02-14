@@ -34,6 +34,8 @@ export class CanvasElement {
     };
   }
 
+  isBeingDragged: boolean = false;
+
   constructor(canvasImageSource: CanvasImageSource, center: Vector2D) {
     this.canvasImageSource = canvasImageSource;
     this.center = center;

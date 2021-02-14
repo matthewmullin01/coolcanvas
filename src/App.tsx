@@ -5,7 +5,7 @@ import Dog from "./assets/dog.png";
 import Cat from "./assets/cat.png";
 import { loadImage } from "./utils/imageUtils";
 
-const IMAGE_URIS = [Dog, Cat];
+const IMAGE_URIS = [Cat, Dog];
 
 function App() {
   const [images, setImages] = useState<HTMLImageElement[]>();

@@ -11,6 +11,11 @@ export class CanvasWrapper {
     return this.canvas.getContext("2d")!;
   }
 
+  /** Returns CanvasElement being dragged, otherwise undefined if none   */
+  get elementBeingDragged() {
+    return this.canvasElements.find((el) => el.isBeingDragged);
+  }
+
   constructor(canvas: HTMLCanvasElement, canvasElements: CanvasElement[]) {
     this.canvas = canvas;
     this.canvasElements = canvasElements;
@@ -22,13 +27,15 @@ export class CanvasWrapper {
   }
 
   drawImages() {
-    this.canvasElements.forEach((element) => {
+    // Reversing order as to paint the last element first. This comes across more intuitively on the UI
+    for (let i = this.canvasElements.length - 1; i >= 0; i--) {
+      const element = this.canvasElements[i];
       const imageRect = new Path2D();
       imageRect.rect(0, 0, element.width, element.height);
       this.canvas
         .getContext("2d")!
         .drawImage(element.canvasImageSource, element.edges.left, element.edges.top, element.width, element.height);
-    });
+    }
   }
 
   render() {
