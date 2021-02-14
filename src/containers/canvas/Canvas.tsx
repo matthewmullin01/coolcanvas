@@ -51,21 +51,21 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     // To manage z-index we can order canvas.current.canvasElements depending on some constraint
     const topMostClickedElement = canvas.current.canvasElements.find((el) => el.containsPoint(cursorPos));
     if (topMostClickedElement) {
-      topMostClickedElement.dragState.setDragging(true, cursorPos);
+      topMostClickedElement.setDragging(true, cursorPos);
     }
   };
 
   const onMouseUp = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (!canvas.current) return;
-    if (canvas.current.elementBeingDragged) canvas.current.elementBeingDragged.dragState.setDragging(false);
+    if (canvas.current.elementBeingDragged) canvas.current.elementBeingDragged.setDragging(false);
   };
 
   const onMouseMove = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (!canvas.current) return;
     const elementBeingDragged = canvas.current.elementBeingDragged;
     if (!elementBeingDragged) return;
-    const cursorPos = getRelativeCursorPosition(event);
     if (!elementBeingDragged.dragState.draggingOffset) throw Error('Element being dragged without "draggingOffset" set');
+    const cursorPos = getRelativeCursorPosition(event);
     elementBeingDragged.center = cursorPos.subtract(elementBeingDragged.dragState.draggingOffset);
     canvas.current.render();
     console.log("Dragging");

@@ -5,6 +5,17 @@ import { Vector2D } from "./vector";
  * Manages internal state of the element - ie position, width, height etc
  * As we are using dynamic getters, the process of updating positions and sizes dynamically is a lot easier.
  */
+
+class DragState {
+  readonly isBeingDragged: boolean;
+  readonly draggingOffset: Vector2D | null;
+
+  constructor(isBeingDragged: boolean = false, draggingOffset: Vector2D | null = null) {
+    this.isBeingDragged = isBeingDragged;
+    this.draggingOffset = draggingOffset;
+  }
+}
+
 export class CanvasElement {
   canvasImageSource: CanvasImageSource;
   center: Vector2D;
@@ -34,11 +45,10 @@ export class CanvasElement {
     };
   }
 
-  dragState: DragState = {
-    isBeingDragged: false,
-    draggingOffset: undefined,
-    setDragging: this.setDragging.bind(this),
-  };
+  private _dragState: DragState = new DragState();
+  get dragState(): DragState {
+    return this._dragState;
+  }
 
   constructor(canvasImageSource: CanvasImageSource, center: Vector2D) {
     this.canvasImageSource = canvasImageSource;
@@ -54,20 +64,9 @@ export class CanvasElement {
     return point.x <= this.edges.right && point.x >= this.edges.left && point.y >= this.edges.top && point.y <= this.edges.bottom;
   }
 
-  private setDragging(isDragging: boolean, point?: Vector2D) {
+  /** Sets the dragState. Also calculates offset from CanvasElement center.  */
+  public setDragging(isDragging: boolean, point?: Vector2D) {
     const draggingOffset = point ? point.subtract(this.center) : undefined;
-
-    this.dragState = {
-      isBeingDragged: isDragging,
-      draggingOffset: draggingOffset,
-      setDragging: this.setDragging.bind(this),
-    };
-    return this.dragState;
+    this._dragState = new DragState(isDragging, draggingOffset);
   }
-}
-
-interface DragState {
-  isBeingDragged: boolean;
-  draggingOffset?: Vector2D;
-  setDragging: (isDragging: boolean, point?: Vector2D) => DragState;
 }
