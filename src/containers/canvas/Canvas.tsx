@@ -1,8 +1,9 @@
-import { FunctionComponent, useCallback, useEffect, useRef } from "react";
+import { FunctionComponent, useCallback, useEffect, useRef, useState } from "react";
 import { useWindowSize } from "../../utils/hooks/useWindowSize";
 import { debounce } from "lodash";
 import "./Canvas.scss";
 import { CanvasElement, Vector2D } from "../../utils/models";
+import { CanvasWrapper } from "../../utils/models/canvasWrapper";
 
 export interface CanvasProps {
   images: HTMLImageElement[];
@@ -10,74 +11,58 @@ export interface CanvasProps {
 
 const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null as any);
-  const windowSize = useWindowSize();
+  const onWindowResize = useWindowSize();
+  const canvas = useRef<CanvasWrapper>();
 
   const initCanvasElements = (image: HTMLImageElement): CanvasElement => {
     const center = new Vector2D(image.width / 2, image.height / 2);
     return new CanvasElement(image, center);
   };
 
-  const canvasElements = props.images.map(initCanvasElements);
-
-  const adjustCanvasSize = useCallback(() => {
+  const resize = () => {
+    console.log("Resizing");
+    if (!canvas.current) return;
     const { innerWidth } = window;
-    canvasRef.current.width = innerWidth;
-    canvasRef.current.height = Math.floor((innerWidth / 16) * 9);
-  }, []);
+    canvas.current.adjustCanvasSize(innerWidth, Math.floor((innerWidth / 16) * 9));
+    canvas.current.render();
+  };
 
-  const drawImages = useCallback(async () => {
-    canvasElements.forEach((element) => {
-      const imageRect = new Path2D();
-      imageRect.rect(0, 0, element.width, element.height);
-      console.log(element.edges, element.corners);
-
-      canvasRef.current
-        .getContext("2d")!
-        .drawImage(element.canvasImageSource, element.edges.left, element.edges.top, element.width, element.height);
-    });
-  }, [canvasElements]);
-
-  const render = useCallback(() => {
-    canvasRef.current.getContext("2d")!.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    drawImages();
-  }, [drawImages]);
-
+  // Debounce limits the number of calls in a given time range. This may prevent unnecessary calls to the render method.
   // Debounce needs to maintain its reference in memory. The eslint-disable allows us to maintain a reference where usually useCallbacks won't
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounceResize = useCallback(
-    debounce(() => {
-      adjustCanvasSize();
-      render();
-    }, 500),
+    debounce(() => resize(), 100),
     []
   );
 
+  const initCanvas = useCallback(() => {
+    console.log("Init");
+    canvas.current = new CanvasWrapper(canvasRef.current, props.images.map(initCanvasElements));
+    (() => resize)();
+  }, [props.images]);
+
   // Mouse Events
   const onMouseDown = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-    const context = canvasRef.current!.getContext("2d")!;
-
     const xPos = event.pageX - (event.currentTarget.offsetLeft || 0);
     const yPos = event.pageY - (event.currentTarget.offsetTop || 0);
     const relativePos = new Vector2D(xPos, yPos);
 
-    canvasElements.forEach((el) => {
+    canvas.current?.canvasElements.forEach((el) => {
       console.log(el.containsPoint(relativePos));
     });
 
     console.log(xPos, yPos);
   };
 
-  // Window Resize Handler
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    debounceResize();
-  }, [windowSize, debounceResize]);
+  // --------------------
+  // --- Side Effects ---
+  // --------------------
 
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    adjustCanvasSize();
-    render();
-  }, [adjustCanvasSize, render]);
+  // Init
+  useEffect(() => initCanvas(), [initCanvas]);
+
+  // Window Resize Handler
+  useEffect(() => debounceResize, [debounceResize, onWindowResize]);
 
   return <canvas ref={canvasRef} onMouseDown={onMouseDown}></canvas>;
 };
