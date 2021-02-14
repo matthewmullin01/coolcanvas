@@ -63,9 +63,9 @@ Each render call was reloading the images from src. By moving this logic up to t
 
 ### **[Wrapping images in custom class to help manage logic and state](https://github.com/matthewmullin01/coolcanvas/commit/f80aafd010cfc669d180fbedd96f7762eb4e1895)**
 
-After digging into the Canvas API I realised it would not be possible to find and mutate children rendered in the canvas directly. Essentially all the Canvas does is essentially paint pixels.
+After digging into the Canvas API I realised it would not be possible to find and mutate children rendered in the canvas directly. Essentially all the Canvas does is paint pixels.
 
-This meant that we could have to manage the state (position, size, drag state, etc) of the rendered elements ourselves.
+This meant that we would have to manage the state (position, size, drag state, etc) of the rendered elements ourselves.
 
 ```
 export class CanvasElement {
@@ -75,7 +75,7 @@ export class CanvasElement {
   ...
 ```
 
-To help this process I created a class that would wrap any rendered element. It would hold a reference to the paintable image in `canvasImageSource` and also the state of the element (eg the `center` position). Many more attributes were added to this class in order to manage any element state.
+To help this process I created a class that would wrap any rendered element. It would hold a reference to the paintable image in `canvasImageSource` and also the state of the element (eg the `center` position). More attributes were added to this class later.
 
 The `Vector2D` class is also a utility class added to hold positional data. It makes doing vector manipulation and maths simpler going forward.
 
@@ -93,7 +93,7 @@ export class CanvasWrapper {
 
 It also has various helper methods (`render`,`drawImages` , etc) which meant we could clean up our `Canvas.tsx` component.
 
-From this point onwards it was very simple to build functionality as we were managing state in a simple way, and we had clear boundaries between our components.
+> From this point onwards it was very simple to build functionality as we were managing state in a simple way, and we had clear boundaries between our components.
 
 ### Drag Functionality
 
