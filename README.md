@@ -1,5 +1,7 @@
 # CoolCanvas
 
+**Live Demo - https://matthewmullin01.github.io/coolcanvas/**
+
 CoolCanvas is a simple React application that makes use of the [HTML Canvas api](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). 
 
 It renders a few draggable images using the Canvas API.
