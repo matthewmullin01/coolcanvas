@@ -1,6 +1,6 @@
-// Vector maths and helper functions can be added later if needed
 /**
  * Wraps x and y coordinates into a single entity.
+ * Utility methods for vector maths added as well.
  */
 export class Vector2D {
   x: number;

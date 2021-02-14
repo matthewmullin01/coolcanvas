@@ -20,7 +20,6 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
   };
 
   const resize = () => {
-    console.log("Resizing");
     if (!canvas.current) return;
     const { innerWidth } = window;
     canvas.current.adjustCanvasSize(innerWidth, Math.floor((innerWidth / 16) * 9));
@@ -29,14 +28,14 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
 
   // Debounce limits the number of calls in a given time range. This may prevent unnecessary calls to the render method.
   // Debounce needs to maintain its reference in memory. The eslint-disable allows us to maintain a reference where usually useCallbacks won't
+  // Could also rather look into limiting the canvas.render() method - ie Similar to setting a fixed framerate in games
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounceResize = useCallback(
-    debounce(() => resize(), 100),
+    debounce(() => resize(), 20),
     []
   );
 
   const initCanvas = useCallback(() => {
-    console.log("Init");
     canvas.current = new CanvasWrapper(canvasRef.current, props.images.map(initCanvasElements));
     (() => resize)();
   }, [props.images]);
@@ -44,6 +43,10 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
   // --------------------
   // --- Mouse Events ---
   // --------------------
+
+  // Potential Improvement -
+  // Rather handle mouse event in parent or even root.
+  // Why? When mouse moves off canvas the image doesn't react to mouse events anymore.
   const onMouseDown = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (!canvas.current) return;
     const cursorPos = getRelativeCursorPosition(event);
@@ -80,7 +83,6 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     if (elementBeingDragged.edges.bottom > canvasHeight) elementBeingDragged.center.y = canvasHeight - elementBeingDragged.height / 2;
 
     canvas.current.render();
-    console.log("Dragging");
   };
 
   // --------------------

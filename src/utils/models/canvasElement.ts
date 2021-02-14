@@ -1,21 +1,10 @@
-import { Vector2D } from "./vector";
+import { DragState, Vector2D } from ".";
 
 /**
  * A utility class to wrap element rendered in the canvas.
  * Manages internal state of the element - ie position, width, height etc
- * As we are using dynamic getters, the process of updating positions and sizes dynamically is a lot easier.
  */
-
-class DragState {
-  readonly isBeingDragged: boolean;
-  readonly draggingOffset: Vector2D | null;
-
-  constructor(isBeingDragged: boolean = false, draggingOffset: Vector2D | null = null) {
-    this.isBeingDragged = isBeingDragged;
-    this.draggingOffset = draggingOffset;
-  }
-}
-
+// As we are using dynamic getters, the process of updating positions and sizes dynamically is a lot easier.
 export class CanvasElement {
   canvasImageSource: CanvasImageSource;
   center: Vector2D;
@@ -36,6 +25,7 @@ export class CanvasElement {
     };
   }
 
+  // Not used currently but may come in handy when doing rotations etc
   get corners() {
     return {
       topLeft: new Vector2D(this.edges.left, this.edges.top),
@@ -45,6 +35,7 @@ export class CanvasElement {
     };
   }
 
+  // Maintains the drag state of the element, and provides useful offset information
   private _dragState: DragState = new DragState();
   get dragState(): DragState {
     return this._dragState;

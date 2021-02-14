@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import "./App.scss";
-import Canvas from "./containers/canvas/Canvas";
+import Canvas from "./components/canvas/Canvas";
 import Dog from "./assets/dog.png";
 import Cat from "./assets/cat.png";
 import { loadImage } from "./utils/imageUtils";
@@ -19,6 +18,9 @@ function App() {
     getImages();
   }, [getImages]);
 
+  // Potential Cool Idea -
+  // Rather than have an images prop, let <Canvas /> accept children.
+  // Convert the children into Canvas Renderable data - eg CanvasImageSource
   return <>{images && <Canvas images={images} />}</>;
 }
 
