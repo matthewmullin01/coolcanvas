@@ -66,7 +66,17 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     if (!elementBeingDragged) return;
     if (!elementBeingDragged.dragState.draggingOffset) throw Error('Element being dragged without "draggingOffset" set');
     const cursorPos = getRelativeCursorPosition(event);
+    const canvasWidth = canvas.current.canvas.width;
+    const canvasHeight = canvas.current.canvas.height;
+
     elementBeingDragged.center = cursorPos.subtract(elementBeingDragged.dragState.draggingOffset);
+
+    // Handle overflow
+    if (elementBeingDragged.edges.left < 0) elementBeingDragged.center.x = elementBeingDragged.width / 2;
+    if (elementBeingDragged.edges.right > canvasWidth) elementBeingDragged.center.x = canvasWidth - elementBeingDragged.width / 2;
+    if (elementBeingDragged.edges.top < 0) elementBeingDragged.center.y = elementBeingDragged.height / 2;
+    if (elementBeingDragged.edges.bottom > canvasHeight) elementBeingDragged.center.y = canvasHeight - elementBeingDragged.height / 2;
+
     canvas.current.render();
     console.log("Dragging");
   };
