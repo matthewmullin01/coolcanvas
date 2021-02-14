@@ -35,9 +35,9 @@ Most of this trouble could have been avoided by using the started template provi
 
 ## Folder Structure
 
-I tried to keep it simple for now.
+I tried to keep it simple for now, with the potential to scale to more folders later.
 
-`src/assets` - holds any assets
+`src/assets` - any assets
 
 `src/components` - any React components. This could be separated into shared components and non-shared components at a later stage if needed.
 
@@ -134,3 +134,32 @@ Again as we are tracking the Canvas element and their state within the `CanvasWr
 Although it is technically not a border - as I am drawing a Green rectangle 2px wider in all direction and then laying the image on top of that, it effectively does the same thing.
 
 An alternative would be to use Canvas' `Path2D.moveTo()` and `Path2D.lineTo()` - but it would require quite a bit more logic.
+
+## Answers to Questions
+
+**How long did it take you to complete this assignment?**
+
+Around 7 hours of active work.
+
+I admit I may have got a little carried away 🙈. I had a ton of fun doing the assignment and I valued learning the ins and outs of the Canvas API so I was more than happy to do so.
+
+
+**What about this assignment did you find most challenging?**
+
+Finding a way to efficiently managing the render cycles between React and the Canvas API.
+
+**What about this assignment did you find unclear?**
+
+Hardly anything. It was very well laid out and as clear as ever.
+
+**What challenges did you face that you did not expect?**
+
+Again the render cycle management. This could easily have been alleviated had I dug into the Canvas API docs before diving head first into framing the solution. Then I may have decided against using a framework as this solution primarily involves handling the Canvas API and surrounding state.
+
+**Do you feel like this assignment has an appropriate level of difficulty?**
+
+The concept was simple - and I can see the solution allowed the flexibility to solve it in multiple ways. Great question in my opinion.
+
+**Briefly explain your decisions to use tools, frameworks and libraries like React, Vue, etc.**
+
+See [The React Decision](#the-react-decision) above.
