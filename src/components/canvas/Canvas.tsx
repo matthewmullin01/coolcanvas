@@ -19,27 +19,27 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     return new CanvasElement(image, center);
   };
 
-  const resize = () => {
+  const resize = useCallback(() => {
     if (!canvas.current) return;
     const { innerWidth } = window;
     canvas.current.adjustCanvasSize(innerWidth, Math.floor((innerWidth / 16) * 9));
     canvas.current.canvasElements.forEach(handleImageOverflow);
     canvas.current.render();
-  };
+  }, []);
 
   // Debounce limits the number of calls in a given time range. This may prevent unnecessary calls to the render method.
   // Debounce needs to maintain its reference in memory. The eslint-disable allows us to maintain a reference where usually useCallbacks won't
   // Could also rather look into limiting the canvas.render() method - ie Similar to setting a fixed framerate in games
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounceResize = useCallback(
-    debounce(() => resize(), 20),
+    debounce(() => resize(), 30),
     []
   );
 
   const initCanvas = useCallback(() => {
     canvas.current = new CanvasWrapper(canvasRef.current, props.images.map(initCanvasElements));
     (() => resize)();
-  }, [props.images]);
+  }, [props.images, resize]);
 
   // --------------------
   // --- Mouse Events ---
