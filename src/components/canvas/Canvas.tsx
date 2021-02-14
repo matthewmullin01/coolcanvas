@@ -23,6 +23,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     if (!canvas.current) return;
     const { innerWidth } = window;
     canvas.current.adjustCanvasSize(innerWidth, Math.floor((innerWidth / 16) * 9));
+    canvas.current.canvasElements.forEach(handleImageOverflow);
     canvas.current.render();
   };
 
@@ -71,18 +72,26 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     if (!elementBeingDragged) return;
     if (!elementBeingDragged.dragState.draggingOffset) throw Error('Element being dragged without "draggingOffset" set');
     const cursorPos = getRelativeCursorPosition(event);
-    const canvasWidth = canvas.current.canvas.width;
-    const canvasHeight = canvas.current.canvas.height;
 
     elementBeingDragged.center = cursorPos.subtract(elementBeingDragged.dragState.draggingOffset);
 
-    // Handle overflow
-    if (elementBeingDragged.edges.left < 0) elementBeingDragged.center.x = elementBeingDragged.width / 2;
-    if (elementBeingDragged.edges.right > canvasWidth) elementBeingDragged.center.x = canvasWidth - elementBeingDragged.width / 2;
-    if (elementBeingDragged.edges.top < 0) elementBeingDragged.center.y = elementBeingDragged.height / 2;
-    if (elementBeingDragged.edges.bottom > canvasHeight) elementBeingDragged.center.y = canvasHeight - elementBeingDragged.height / 2;
+    handleImageOverflow(elementBeingDragged);
 
     canvas.current.render();
+  };
+
+  /**
+   *  Prevents image from overflowing off the canvas edges.
+   *  Note - canvas.render() method must be called after.
+   */
+  const handleImageOverflow = (element: CanvasElement) => {
+    if (!canvas.current) return;
+    const canvasWidth = canvas.current.canvas.width;
+    const canvasHeight = canvas.current.canvas.height;
+    if (element.edges.left < 0) element.center.x = element.width / 2;
+    if (element.edges.right > canvasWidth) element.center.x = canvasWidth - element.width / 2;
+    if (element.edges.top < 0) element.center.y = element.height / 2;
+    if (element.edges.bottom > canvasHeight) element.center.y = canvasHeight - element.height / 2;
   };
 
   // --------------------
