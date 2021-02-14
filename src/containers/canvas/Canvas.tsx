@@ -53,11 +53,13 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     if (topMostClickedElement) {
       topMostClickedElement.setDragging(true, cursorPos);
     }
+    canvas.current.render();
   };
 
   const onMouseUp = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (!canvas.current) return;
     if (canvas.current.elementBeingDragged) canvas.current.elementBeingDragged.setDragging(false);
+    canvas.current.render();
   };
 
   const onMouseMove = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {

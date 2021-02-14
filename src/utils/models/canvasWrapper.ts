@@ -26,16 +26,32 @@ export class CanvasWrapper {
     this.canvas.height = height;
   }
 
-  drawImages() {
+  private drawImages() {
     // Reversing order as to paint the last element first. This comes across more intuitively on the UI
     for (let i = this.canvasElements.length - 1; i >= 0; i--) {
       const element = this.canvasElements[i];
-      const imageRect = new Path2D();
-      imageRect.rect(0, 0, element.width, element.height);
-      this.canvas
-        .getContext("2d")!
-        .drawImage(element.canvasImageSource, element.edges.left, element.edges.top, element.width, element.height);
+      if (element.dragState.isBeingDragged) {
+        this.drawBorder(element);
+      }
+      this.drawImage(element);
     }
+  }
+
+  private drawImage(element: CanvasElement) {
+    const imageRect = new Path2D();
+    imageRect.rect(510, 0, element.width, element.height);
+    this.context.drawImage(element.canvasImageSource, element.edges.left, element.edges.top, element.width, element.height);
+  }
+
+  private drawBorder(element: CanvasElement) {
+    const BORDER_WIDTH = 2;
+    this.context.fillStyle = "green";
+    this.context.fillRect(
+      element.edges.left - BORDER_WIDTH,
+      element.edges.top - BORDER_WIDTH,
+      element.width + BORDER_WIDTH * 2,
+      element.height + BORDER_WIDTH * 2
+    );
   }
 
   render() {
