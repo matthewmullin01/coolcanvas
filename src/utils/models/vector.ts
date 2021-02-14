@@ -9,4 +9,12 @@ export class Vector2D {
     this.x = x;
     this.y = y;
   }
+
+  subtract(point: Vector2D) {
+    return new Vector2D(this.x - point.x, this.y - point.y);
+  }
+
+  add(point: Vector2D) {
+    return new Vector2D(this.x + point.x, this.y + point.y);
+  }
 }

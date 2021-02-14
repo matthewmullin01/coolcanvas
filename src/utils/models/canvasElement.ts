@@ -34,7 +34,11 @@ export class CanvasElement {
     };
   }
 
-  isBeingDragged: boolean = false;
+  dragState: DragState = {
+    isBeingDragged: false,
+    draggingOffset: undefined,
+    setDragging: this.setDragging.bind(this),
+  };
 
   constructor(canvasImageSource: CanvasImageSource, center: Vector2D) {
     this.canvasImageSource = canvasImageSource;
@@ -49,4 +53,21 @@ export class CanvasElement {
   public containsPoint(point: Vector2D) {
     return point.x <= this.edges.right && point.x >= this.edges.left && point.y >= this.edges.top && point.y <= this.edges.bottom;
   }
+
+  private setDragging(isDragging: boolean, point?: Vector2D) {
+    const draggingOffset = point ? point.subtract(this.center) : undefined;
+
+    this.dragState = {
+      isBeingDragged: isDragging,
+      draggingOffset: draggingOffset,
+      setDragging: this.setDragging.bind(this),
+    };
+    return this.dragState;
+  }
+}
+
+interface DragState {
+  isBeingDragged: boolean;
+  draggingOffset?: Vector2D;
+  setDragging: (isDragging: boolean, point?: Vector2D) => DragState;
 }

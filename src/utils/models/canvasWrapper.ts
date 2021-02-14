@@ -13,7 +13,7 @@ export class CanvasWrapper {
 
   /** Returns CanvasElement being dragged, otherwise undefined if none   */
   get elementBeingDragged() {
-    return this.canvasElements.find((el) => el.isBeingDragged);
+    return this.canvasElements.find((el) => el.dragState.isBeingDragged);
   }
 
   constructor(canvas: HTMLCanvasElement, canvasElements: CanvasElement[]) {
